@@ -23,3 +23,16 @@ Select Name from Employee
 where salary > 2000 and months < 10
 order by employee_id;
 -- bai tap 9
+Select product_id from Products
+where low_fats = 'Y' and recyclable = 'Y';  
+-- bai tap 10
+Select name from Customer
+where referee_id <> 2 or referee_id is null;
+-- bai tap 11
+Select name, population, area from World
+where area > 3000000 or population >= 25000000;
+-- bai tap 12
+select distinct author_id AS id from Views
+where author_id = viewer_id
+order by author_id;
+-- bai tap 13
