@@ -17,7 +17,7 @@ Select distinct City from Station
 Where Not (City Like 'a%' or city like 'e%' or city like 'i%' or city like 'o%' or city like 'u%');
 --bai tap 7
 select name from employee
-order by name;/*
+order by name;
 -- bai tap 8
 Select Name from Employee
 where salary > 2000 and months < 10
@@ -36,3 +36,11 @@ select distinct author_id AS id from Views
 where author_id = viewer_id
 order by author_id;
 -- bai tap 13
+SELECT part, assembly_step FROM parts_assembly
+where finish_date is NULL;
+-- bai tap 14
+select * from lyft_drivers
+where not yearly_salary between 30000 and 70000;
+-- bai tap 15
+select advertising_channel from uber_advertising
+where year = 2019 and money_spent > 100000;
