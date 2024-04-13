@@ -33,3 +33,12 @@ FROM monthly_cards_issued
 GROUP BY card_name
 ORDER BY Max(issued_amount) - MIN(issued_amount) DESC;
 --bai tap 8
+SELECT
+  manufacturer,
+  COUNT(drug) AS drug_count,
+  abs(SUM(total_sales - cogs)) AS total_loss
+FROM pharmacy_sales
+WHERE total_sales - cogs <= 0
+GROUP BY manufacturer
+ORDER BY total_loss DESC;
+-- bai tap 9
