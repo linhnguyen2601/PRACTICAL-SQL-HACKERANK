@@ -4,6 +4,9 @@ where ID%2=0
 -- bai tap 2
 select count(city) - count(distinct city) from station;
 -- bai tap 3
+select 
+ceiling(avg(salary) - avg(REPLACE(SALARY, '0', '')))
+from employees
 -- bai tap 4
 SELECT ROUND(CAST(SUM(item_count * order_occurrences)/SUM(order_occurrences) AS DECIMAL),1) as mean
 FROM items_per_order
