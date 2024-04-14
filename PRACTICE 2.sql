@@ -42,3 +42,25 @@ WHERE total_sales - cogs <= 0
 GROUP BY manufacturer
 ORDER BY total_loss DESC;
 -- bai tap 9
+select
+id, movie, description, rating
+from cinema
+where id%2=1 and description not like 'boring'
+order by rating desc
+-- bai tap 10
+select teacher_id,
+count(distinct subject_id) as cnt
+from Teacher
+group by teacher_id;
+-- bai tap 11
+select
+user_id,
+count(follower_id) as followers_count
+from followers
+group by user_id
+--bai tap 12
+select 
+class
+from courses
+group by class
+having count(distinct student)> 5
