@@ -35,3 +35,23 @@ select
 tweet_id from tweets
 where length(content)>15
 -- bai tap 7
+select 
+activity_date as day,
+count(distinct user_id) as active_users
+from activity
+where (activity_date) between '2019-06-27' and '2019-07-27'
+group by activity_date
+-- bai tap 8
+select
+count (id)
+from employees
+where joining_date between '2022-01-01' and '2022-07-31';
+-- bai tap 9: Find the position of the lower case letter 'a' in the first name of the worker 'Amitah'.'
+select 
+position('a' in first_name) from worker
+where first_name = 'Amitah';
+-- bai tap 10: Find the vintage years of all wines from the country of Macedonia. 
+select 
+title,
+substring(title, length(winery)+ 2,4) as year from winemag_p2
+where country = 'Macedonia';
