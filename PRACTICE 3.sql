@@ -13,4 +13,11 @@ SELECT manufacturer,
 FROM pharmacy_sales
 GROUP BY manufacturer
 ORDER BY SUM(total_sales) DESC
--- bai tap 4
+-- bai tap 4: write a query to retrieve the average star rating for each product, grouped by month. 
+SELECT 
+extract(month from submit_date) as month,
+product_id,
+ROUND(AVG(stars),2)
+FROM reviews
+GROUP BY product_id, extract(month from submit_date)
+ORDER BY extract(month from submit_date), product_id;
