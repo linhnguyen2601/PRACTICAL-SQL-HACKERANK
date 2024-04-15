@@ -21,3 +21,4 @@ ROUND(AVG(stars),2)
 FROM reviews
 GROUP BY product_id, extract(month from submit_date)
 ORDER BY extract(month from submit_date), product_id;
+-- bai tap 5: Write a query to identify the top 2 Power Users who sent the highest number of messages on Microsoft Teams in August 2022.
