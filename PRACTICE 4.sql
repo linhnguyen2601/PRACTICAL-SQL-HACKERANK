@@ -10,6 +10,13 @@ select x,y,z,
 case when x+y> z and y+z>x and z+x>y then 'Yes' else 'No' end triangle 
 from triangle
 -- bai tap 3
--- bai tap 4
+-- bai tap 4 (da lam ơ PRACTICE 1)
 Select name from Customer
 where referee_id <> 2 or referee_id is null;
+-- bai tap 5
+select survived,
+sum(case when pclass = 1 then 1 else 0 end) as first_class,
+sum(case when pclass = 2 then 1 else 0 end) as second_class,
+sum(case when pclass = 3 then 1 else 0 end) as third_class
+from titanic
+group by survived;
