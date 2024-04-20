@@ -37,3 +37,13 @@ employees as b
 on a.reports_to=b.employee_id
 group by name
 -- bai tap 6
+select a.product_name, sum(b.unit) as unit
+from products as a
+RIGHT JOIN orders as b
+on a.product_id = b.product_id
+where (b.order_date between '2020-02-01' and '2020-02-28')
+group by a.product_name
+having sum(b.unit) >= 100
+-- bai tap 7
+
+--mid-course test
