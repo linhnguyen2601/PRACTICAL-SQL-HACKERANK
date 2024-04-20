@@ -23,3 +23,17 @@ ON (a.user_id=b.user_id
 and not activity_type='chat')
 group by a.age_bucket
 -- bai tap 4
+SELECT a.customer_id
+FROM customer_contracts as a
+FULL JOIN products as b 
+on a.product_id=b.product_id
+GROUP BY a.customer_id
+HAVING COUNT(distinct(b.product_category))=3
+--bai tap 5
+select a.reports_to as employee_id, b.name as name, count(a.name) as reports_count, round(avg(a.age)) as average_age
+from employees as a
+join
+employees as b
+on a.reports_to=b.employee_id
+group by name
+-- bai tap 6
