@@ -80,3 +80,41 @@ on b.category_id = c. category_id
 group by c.name
 order by so_luong desc
 -- cai hoi 5
+select a.actor_id, a.first_name, a.last_name, count(film_id) as so_luong_film
+from actor as a
+JOIN film_actor as b
+on a.actor_id=b.actor_id
+group by a.actor_id
+order by so_luong_film desc
+-- cau hoi 6
+select count(a.address_id)
+from address as a 
+LEFT JOIN
+customer as b
+on a.address_id = b.address_id
+where customer_id is null
+-- cau 7
+select a.city, sum(d.amount) as doanh_thu
+from city as a
+JOIN address as b
+on a.city_id=b.city_id
+JOIN customer as c
+on b.address_id=c.address_id
+JOIN payment as d
+on c.customer_id=d.customer_id
+group by a.city
+order by doanh_thu desc
+-- cau hoi 8
+select CONCAT(a.city,', ', e.country) as city_and_country, 
+sum(d.amount) as doanh_thu
+from city as a
+JOIN address as b
+on a.city_id=b.city_id
+JOIN customer as c
+on b.address_id=c.address_id
+JOIN payment as d
+on c.customer_id=d.customer_id
+JOIN country as e
+on a.country_id=e.country_id
+group by city_and_country
+order by doanh_thu desc
