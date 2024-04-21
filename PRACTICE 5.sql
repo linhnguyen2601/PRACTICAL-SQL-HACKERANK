@@ -45,5 +45,38 @@ where (b.order_date between '2020-02-01' and '2020-02-28')
 group by a.product_name
 having sum(b.unit) >= 100
 -- bai tap 7
-
+SELECT a.page_id
+FROM pages as a  
+FULL JOIN page_likes as b  
+ON a.page_id = b.page_id
+where b.page_id is NULL
+order by a.page_id
 --mid-course test
+-- cau hoi 1
+select min(distinct(replacement_cost)) from film
+-- cau hoi 2
+Select sum(case when replacement_cost between 9.99 and 19.99 then 1 else 0 end) as low,
+sum(case when replacement_cost between 20.00 and 24.99 then 1 else 0 end) as medium,
+sum(case when replacement_cost between 25.00 and 29.99 then 1 else 0 end) as high
+from film
+-- cau hoi 3
+select title, length,c.name
+from film as a
+JOIN
+film_category as b
+on a.film_id=b.film_id
+JOIN category as c
+on b.category_id = c. category_id
+where c.name in ('Drama','Sports')
+order by length desc --- sports, 184
+-- cau hoi 4
+select  c.name,count(title) as so_luong
+from film as a
+JOIN
+film_category as b
+on a.film_id=b.film_id
+JOIN category as c
+on b.category_id = c. category_id
+group by c.name
+order by so_luong desc
+-- cai hoi 5
