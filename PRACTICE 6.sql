@@ -1,0 +1,52 @@
+-- cau 1
+select count(company_id)
+FROM (
+select count(job_id) as count_job_id, company_id, title, description
+from job_listings
+group by company_id, title, description) as Results
+where count_job_id > 1
+-- cau 2
+SELECT category, product, total_spend
+FROM (
+SELECT category, product, SUM(spend) as total_spend,
+RANK() OVER (PARTITION BY category ORDER BY SUM(spend) DESC)
+from product_spend
+where transaction_date between '01-01-2022' and '01-01-2023'
+group by (category, product)
+) as result
+where rank < 3
+-- cau 3
+select COUNT(policy_holder_id) FROM
+(SELECT policy_holder_id, COUNT(case_id) as number_of_calls FROM callers
+group by policy_holder_id) as result
+where number_of_calls >=3
+-- cau 4
+SELECT a.page_id
+FROM pages as a  
+FULL JOIN page_likes as b  
+ON a.page_id = b.page_id
+where b.page_id is NULL
+order by a.page_id
+-- cau 5
+with result AS
+(SELECT 
+EXTRACT(MONTH from event_date) as month,
+user_id
+FROM user_actions
+where event_date between '06/01/2022' and '08/01/2022')
+select a.month, count(distinct(a.user_id))
+from result as a  
+join result as b  
+on (a.user_id = b.user_id
+and a.month <> b.month)
+where a.month=7 
+group by a.month
+-- cau 6
+select
+date_format (trans_date, '%c %Y') as month,
+country, 
+sum(amount)
+from transactions
+where state ='approved'
+group by date_format (trans_date, '%c %Y'), country
+
