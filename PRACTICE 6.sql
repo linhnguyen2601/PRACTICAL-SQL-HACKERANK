@@ -75,3 +75,13 @@ customer
 group by customer_id
 having count(distinct(product_key)) = (select count(distinct(product_key)) from product) 
 -- cau 9
+select a.employee_id
+from employees as a
+LEFT JOIN employees as b
+ON a.manager_id = b.employee_id
+where (a.manager_id is not null
+and b.employee_id is null
+and a.salary < 30000)
+-- cau 11
+-- cau 12
+
