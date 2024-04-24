@@ -64,3 +64,14 @@ from approved_transaction as a
 JOIN total_transaction as b
 on a.month=b.month and a.country=b.country
 -- cau 7
+select product_id, year as first_year, quantity, price from
+(select *,
+rank () over (partition by product_id order by year) as rank_year
+from sales) as result
+where rank_year =1
+-- cau 8
+select customer_id from
+customer 
+group by customer_id
+having count(distinct(product_key)) = (select count(distinct(product_key)) from product) 
+-- cau 9
