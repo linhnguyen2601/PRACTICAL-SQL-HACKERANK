@@ -42,11 +42,25 @@ and a.month <> b.month)
 where a.month=7 
 group by a.month
 -- cau 6
-select
+with approved_transaction as
+(select
 date_format (trans_date, '%c %Y') as month,
-country, 
-sum(amount)
+country, count(id) as approved_trans_count,
+sum(amount) as sum_approved_amount
 from transactions
-where state ='approved'
+where state = 'approved'
 group by date_format (trans_date, '%c %Y'), country
+),
+total_transaction as
+(select
+date_format (trans_date, '%c %Y') as month,
+country,count(id) as trans_count,
+sum(amount) as sum_amount
+from transactions
+group by date_format (trans_date, '%c %Y'), country)
 
+select a.*, b.trans_count, b.sum_amount
+from approved_transaction as a 
+JOIN total_transaction as b
+on a.month=b.month and a.country=b.country
+-- cau 7
