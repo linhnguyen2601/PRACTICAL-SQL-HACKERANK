@@ -83,5 +83,28 @@ where (a.manager_id is not null
 and b.employee_id is null
 and a.salary < 30000)
 -- cau 11
+With result as 
+(
+select user_id from movierating
+group by user_id
+order by count(distinct(movie_id)) desc, user_id
+limit 1)
+select name from users as a
+JOIN result as b
+on a.user_id=b.user_id
+UNION 
+( 
+    with movie_highest_avg_rating as
+(Select movie_id, avg(rating) as average_rating from movierating
+where created_at between '2020-02-01' and '2020-02-29'
+group by movie_id
+order by avg(rating) desc)
+
+select title from movies as a 
+JOIN movie_highest_avg_rating as b
+on a.movie_id=b.movie_id
+order by b.average_rating desc, title
+limit 1
+)
 -- cau 12
 
