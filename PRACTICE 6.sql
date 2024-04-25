@@ -107,4 +107,10 @@ order by b.average_rating desc, title
 limit 1
 )
 -- cau 12
-
+select *, count(*) as num from
+(select requester_id as id from RequestAccepted 
+UNION ALL 
+select accepter_id from RequestAccepted) as bond
+group by id
+order by num desc
+limit 1
