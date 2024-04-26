@@ -53,5 +53,24 @@ OVER(PARTITION BY merchant_id, credit_card_id, amount order by transaction_times
 FROM transactions) as a
 where EXTRACT(EPOCH FROM transaction_timestamp - lag)/60 <=10) as b  
 -- cau 7
-
+SELECT category, product, total_spend
+FROM (
+SELECT category, product, SUM(spend) as total_spend,
+RANK() OVER (PARTITION BY category ORDER BY SUM(spend) DESC)
+from product_spend
+where transaction_date between '01-01-2022' and '01-01-2023'
+group by (category, product)
+) as result
+where rank < 3
 -- cau 8
+select * from (
+select c.artist_name,
+dense_rank() over(order by COUNT(*) DESC) as top_artist
+from songs as a
+JOIN global_song_rank as b
+on a.song_id=b.song_id
+JOIN artists as c  
+on a.artist_id = c.artist_id
+where rank <=10
+group by c.artist_name) as a  
+where top_artist <=5
