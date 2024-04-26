@@ -41,6 +41,11 @@ group by user_id, transaction_date) as a
 where rank =1
 order by transaction_date
 -- cau 5
+  SELECT user_id, tweet_date, 
+ROUND(
+AVG(tweet_count) OVER(PARTITION BY user_id ORDER BY tweet_date
+ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) as average
+FROM tweets; 
 -- cau 6
 SELECT count(*) 
 from (
