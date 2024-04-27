@@ -17,7 +17,14 @@ from activity
 select 
 round(sum(Case when diff=-1 then 1 else 0 end)/count(distinct(player_id)),2) as fraction from result
 -- cau 3
-
+ select
+ case 
+ when id = (select count(*) from seat) and id%2=1 then id 
+ when id < (select count(*) from seat) and id%2=1 then id+1 else id-1 
+ end
+ as id, student
+from seat
+order by id
 -- cau 4
 
 -- cau 5
