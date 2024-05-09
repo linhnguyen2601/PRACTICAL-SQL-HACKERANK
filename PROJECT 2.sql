@@ -89,3 +89,36 @@ sum(sale_price) as revenue
 from a
 where day between '2022-01-15' and '2022-04-15'
 group by product_categories, day 
+
+-- Phần 2
+with d as(
+select
+a.order_id, 
+format_date('%Y-%m', a.created_at) as month,
+format_date('%Y', a.created_at) as year,
+b.product_id, b.sale_price, c.category, c.cost
+from bigquery-public-data.thelook_ecommerce.orders as a
+JOIN
+bigquery-public-data.thelook_ecommerce.order_items as b
+on a.order_id=b.order_id
+JOIN bigquery-public-data.thelook_ecommerce.products as c
+on b.order_id=c.id
+where a.status = 'Complete'),
+
+e as (
+select month,year, sale_price, category,cost,
+sum(sale_price) over(partition by month, category) as TPV,
+sum(cost) over(partition by month, category) as total_cost,
+sum(order_id) over(partition by month, category) as TPO,
+sum(sale_price-cost) over(partition by month, category) as total_profit,
+sum((sale_price-cost)/cost) over(partition by month, category) as Profit_to_cost_ratio
+from d)
+
+select *,
+lead(TPV) over(order by month) as previous_TPV,
+lead(total_cost) over(order by month)as previous_total_cost,
+lead(TPO) over(order by month) as previous_TPO,
+lead(total_profit) over(order by month) as previous_total_profit_total_profit,
+lead(Profit_to_cost_ratio) over(order by month) as previous_Profit_to_cost_ratio
+from e
+order by month
