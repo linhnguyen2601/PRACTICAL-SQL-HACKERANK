@@ -91,6 +91,7 @@ where day between '2022-01-15' and '2022-04-15'
 group by product_categories, day 
 
 -- Phần 2
+-- cau 1
 CREATE TEMP VIEW vw_ecommerce_analyst as (
 with d as(
 select
@@ -124,3 +125,32 @@ lead(Profit_to_cost_ratio) over(order by month,category) as previous_Profit_to_c
 from e
 order by month
 )
+-- cau 2
+with a as (
+select user_id,created_at,
+format_date('%Y-%m-%d',(min(created_at) over(partition by user_id))) as first_order, 
+format_date('%Y-%m-%d', created_at) as order_date
+from bigquery-public-data.thelook_ecommerce.order_items
+where status ='Complete'
+),
+b as (
+select *, format_date('%Y-%m', created_at) as order_month,
+(extract(year from date(order_date))- extract(year from date(first_order)))*12+
+(extract(month from date(order_date))- extract(month from date(first_order)))+1 as index
+from a
+where (extract(year from date(order_date))- extract(year from date(first_order)))*12+
+(extract(month from date(order_date))- extract(month from date(first_order)))+1<=4
+),
+c as(
+select order_month, index,
+count(user_id) as so_KH
+from b
+group by order_month, index)
+select order_month,
+sum(case when index=1 then so_KH else 0 end) as m1,
+sum(case when index=2 then so_KH else 0 end) as m2,
+sum(case when index=3 then so_KH else 0 end) as m3,
+sum(case when index=4 then so_KH else 0 end) as m4
+from c
+group by order_month
+order by order_month
