@@ -91,6 +91,7 @@ where day between '2022-01-15' and '2022-04-15'
 group by product_categories, day 
 
 -- Phần 2
+CREATE TEMP VIEW vw_ecommerce_analyst as (
 with d as(
 select
 a.order_id, 
@@ -115,10 +116,11 @@ sum((sale_price-cost)/cost) over(partition by month, category) as Profit_to_cost
 from d)
 
 select *,
-lead(TPV) over(order by month) as previous_TPV,
-lead(total_cost) over(order by month)as previous_total_cost,
-lead(TPO) over(order by month) as previous_TPO,
-lead(total_profit) over(order by month) as previous_total_profit_total_profit,
-lead(Profit_to_cost_ratio) over(order by month) as previous_Profit_to_cost_ratio
+lead(TPV) over(order by month, category) as previous_TPV,
+lead(total_cost) over(order by month,category)as previous_total_cost,
+lead(TPO) over(order by month,category) as previous_TPO,
+lead(total_profit) over(order by month,category) as previous_total_profit_total_profit,
+lead(Profit_to_cost_ratio) over(order by month,category) as previous_Profit_to_cost_ratio
 from e
 order by month
+)
