@@ -112,7 +112,7 @@ on c.challenge_id = d.challenge_id
 join Submission_Stats as e
 on e.challenge_id = d.challenge_id
 
-Bai 8: Advanced question
+Bai 8: Advanced question (suspicious transactions)
 with cte as 
 	(
 select *,
