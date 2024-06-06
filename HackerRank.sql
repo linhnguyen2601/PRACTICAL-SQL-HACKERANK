@@ -112,7 +112,24 @@ on c.challenge_id = d.challenge_id
 join Submission_Stats as e
 on e.challenge_id = d.challenge_id
 
+Bai 8: Advanced question
+with cte as 
+	(
+select *,
+lead(dt) over(partition by sender order by dt) as next_dt,
+lead(dt) over(partition by sender order by dt) - dt as timediff
+from crypto_market
+	),
+	cte2 as (
+select *,
+row_number() over(partition by sender order by dt)
+from cte
+where timediff <= interval '1' hour or timediff is null),
+	cte3 as (
+select * from cte2
+where not (row_number=1 and timediff is null)
 	)
-select min(dt), max(next_dt), sender, max(row_number)+1 as transactions, sum(amount) as total_transaction from cte2
+select min(dt), max(next_dt), sender, max(row_number) as transactions, sum(amount) as total_transaction from cte3
 group by sender
 having sum(amount) >=150
+order by min(dt)
