@@ -76,3 +76,43 @@ on cte.friend_id = d.id)
 select name from cte2
 where friend_salary > salary
 order by friend_salary
+
+Bai 6:
+with cte1 as (
+select *,
+row_number() over (partition by x,y order by x,y) as rownumber from functions),
+
+cte2 as (
+select x, y from cte1
+where (x=y and rownumber > 1)
+or x !=y)
+
+select b1.*
+from cte2 as b1
+join cte2 as b2
+on b1.x = b2.y
+and b1.y = b2.x
+where b1.x <= b1.y
+order by b1.x
+
+Bai 7:
+select a.contest_id, 
+a.hacker_id, a.name, 
+sum(total_submissions) over (partition by a.hacker_id) as sumtotal_submissions, 
+sum(total_accepted_submissions) over (partition by a.hacker_id) as sumaccepted_submissions, 
+sum(total_views) over(partition by a.hacker_id) as sum_total_views, 
+sum(total_unique_views) over(partition by a.hacker_id) as sum_unique_views
+from contests as a
+join colleges as b
+on a.contest_id = b.contest_id
+join Challenges as c
+on b.college_id = c.college_id
+join view_stats as d
+on c.challenge_id = d.challenge_id
+join Submission_Stats as e
+on e.challenge_id = d.challenge_id
+
+	)
+select min(dt), max(next_dt), sender, max(row_number)+1 as transactions, sum(amount) as total_transaction from cte2
+group by sender
+having sum(amount) >=150
