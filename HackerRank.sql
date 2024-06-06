@@ -39,3 +39,13 @@ max(case when occupation = 'Actor' then name else null end) as Actor
 from cte
 group by ratingrank
 
+https://www.hackerrank.com/challenges/sql-projects/problem 
+with cte1 as
+(Select Start_Date, End_Date, 
+End_date - Dense_Rank() Over (Order By End_Date)  AS Part From Projects),
+cte2 as
+(select part,
+min(Start_date) as start_project_date, max(End_date) as end_project_date from cte1
+group by part)
+select start_project_date, end_project_date from cte2
+order by end_project_date - start_project_date
