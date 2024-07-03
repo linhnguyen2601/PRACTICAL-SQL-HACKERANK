@@ -1,4 +1,4 @@
--- 1. Tạo bảng trong PostgreSQL
+-- 1. CREATE TABLE AND IMPORT DATA
 create table SALES_DATASET_RFM_PRJ
 (
   ordernumber VARCHAR,
@@ -24,7 +24,7 @@ create table SALES_DATASET_RFM_PRJ
   dealsize         VARCHAR
 ) 
 
--- 2. Đổi kiểu dữ liệu
+-- 2. CHANGE DATA TYPE
 ALTER TABLE SALES_DATASET_RFM_PRJ
 ALTER COLUMN ordernumber TYPE integer USING ordernumber::integer,
 ALTER COLUMN quantityordered TYPE integer USING quantityordered::integer,
@@ -53,7 +53,7 @@ where sales is null
 select * from public.sales_dataset_rfm_prj
 where orderdate is null
 
--- 4. Thêm cột CONTACTLASTNAME, CONTACTFIRSTNAME được tách ra từ CONTACTFULLNAME . 
+-- 4. ADD CONTACTLASTNAME, CONTACTFIRSTNAME WHICH ARE EXTRACTED FROM CONTACTFULLNAME . 
 Chuẩn hóa CONTACTLASTNAME, CONTACTFIRSTNAME theo định dạng chữ cái đầu tiên viết hoa, chữ cái tiếp theo viết thường. 
 
 ALTER TABLE sales_dataset_rfm_prj
@@ -87,7 +87,7 @@ set year_id = extract(year from orderdate),
 	qtr_id = extract(quarter from orderdate),
 	month_id = extract(month from orderdate)
 	
--- 6. Tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) 
+-- 6. CHECK OUTLIERS
 -- Cách 1: IQR
 with cte as 
 	(
@@ -115,7 +115,7 @@ from sales_dataset_rfm_prj)
 select quantityordered, (quantityordered - avg)/stddev as z_score from cte
 where abs((quantityordered - avg)/stddev) > 3
 
---7. Sau khi làm sạch dữ liệu, hãy lưu vào bảng mới tên là SALES_DATASET_RFM_PRJ_CLEAN
+--7. CREATE NEW TABLE: SALES_DATASET_RFM_PRJ_CLEAN
 CREATE TABLE sales_dataset_rfm_clean as 
 	
 with cte as
