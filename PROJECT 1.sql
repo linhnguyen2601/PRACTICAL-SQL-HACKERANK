@@ -24,6 +24,11 @@ create table SALES_DATASET_RFM_PRJ
   dealsize         VARCHAR
 ) 
 
+CREATE TABLE segment_score
+(
+    segment Varchar,
+    scores Varchar)
+	
 -- 2. CHANGE DATA TYPE
 ALTER TABLE SALES_DATASET_RFM_PRJ
 ALTER COLUMN ordernumber TYPE integer USING ordernumber::integer,
@@ -35,6 +40,7 @@ ALTER COLUMN orderdate TYPE date USING orderdate::date,
 ALTER COLUMN msrp TYPE integer USING msrp::integer
 
 -- 3. Check Null/Blank
+-- TABLE sales_dataset_rfm_prj
 select * from public.sales_dataset_rfm_prj
 where ordernumber is null
 
@@ -53,6 +59,16 @@ where sales is null
 select * from public.sales_dataset_rfm_prj
 where orderdate is null
 
+-- Table segment_score: check duplicate:
+
+select * from segment_score
+where scores in 
+(select scores from 
+	(
+select scores, count(distinct(segment)) from segment_score
+group by scores
+having count(distinct(segment)) > 1) as a)	
+	
 -- 4. ADD CONTACTLASTNAME, CONTACTFIRSTNAME WHICH ARE EXTRACTED FROM CONTACTFULLNAME . 
 Chuẩn hóa CONTACTLASTNAME, CONTACTFIRSTNAME theo định dạng chữ cái đầu tiên viết hoa, chữ cái tiếp theo viết thường. 
 
