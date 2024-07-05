@@ -1,15 +1,13 @@
 --cau 1
-select month_year, 
-count(order_id) as total_order, count(distinct user_id) as total_user
-from (
-select
-order_id, user_id,
+select 
 format_date('%Y-%m',created_at) as month_year,
-created_at from bigquery-public-data.thelook_ecommerce.orders
-where status ='Complete') as a
-where month_year between '2019-01' and '2022-04'
+count(Distinct(order_id)) as total_orders,
+count(distinct(user_id)) as total_users
+from bigquery-public-data.thelook_ecommerce.orders
+where status = 'Complete'
 group by month_year
-
+order by month_year desc
+  
 --cau 2
 with e as (
 select
