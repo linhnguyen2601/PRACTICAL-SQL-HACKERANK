@@ -18,6 +18,47 @@ where area >= 3000000 or population >= 25000000
 select distinct(author_id) as id from views
 where author_id  = viewer_id
 
-#  1683. Invalid Tweets
+#  1683. Invalid Tweets I
 select tweet_id from tweets
 where length(content) > 15
+
+# 1378. Replace Employee ID With The Unique Identifier
+  
+select b.unique_id,a.name from employees as a
+left join employeeUNI as b
+on a.id=b.id
+  
+#  1068. Product Sales Analysis I
+
+select product_name,year, price from sales as a
+join product as b
+on a.product_id=b.product_id
+
+1581. Customer Who Visited but Did Not Make Any Transactions
+
+select customer_id, count(visit_id) as count_no_trans from visits  
+where visit_id not in (Select visit_id from transactions)
+group by customer_id
+
+select customer_id, count(a.visit_id) as count_no_trans from visits as a
+left join transactions as b
+on a.visit_id=b.visit_id
+where transaction_id is null
+group by customer_id
+
+# 197. Rising Temperature
+
+select id from 
+(
+select id, temperature,
+lag(temperature) over(order by recorddate) as tem_next_day 
+from weather) as a
+where temperature > tem_next_day
+=> không pass được test case nếu ngày recordDate không liền nhau
+
+with cte as (
+select *, recordDate -1 as previous_recordDate from weather)
+select a.id from cte as a
+join weather as b
+on a.previous_recordDate = b.recordDate
+where a.temperature > b.temperature
