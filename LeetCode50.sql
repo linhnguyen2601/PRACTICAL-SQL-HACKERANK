@@ -62,3 +62,19 @@ select a.id from cte as a
 join weather as b
 on a.previous_recordDate = b.recordDate
 where a.temperature > b.temperature
+
+# 1661. Average Time of Process per Machine
+
+select machine_id, 
+round(avg(end_time - start_time)::numeric,3) as processing_time
+from
+(
+select a.machine_id, a.process_id, a.activity_type, a.timestamp as start_time, b.timestamp as end_time from activity as a
+join activity as b
+on (a.machine_id = b.machine_id) and (a.process_id = b.process_id)
+where a.activity_type = 'start' and b.activity_type = 'end') as c
+group by machine_id
+
+# 577. Employee Bonus
+
+
