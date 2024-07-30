@@ -182,4 +182,59 @@ def count_unique_subjects(teacher: pd.DataFrame) -> pd.DataFrame:
 
 # 1075. Project Employees I
 
+select project_id, round(avg(experience_years), 2) as average_years from
+(
+select a.*, experience_years from project as a
+join employee as b
+on a.employee_id = b.employee_id) as c
+group by project_id
 
+# 1633. Percentage of Users Attended a Contest
+
+select contest_id, 
+round(
+    count(user_id)*100.00/(select count(Distinct(user_Id)) from users)
+    ,2) as percentage 
+  from register
+group by contest_id
+order by percentage desc, contest_id
+
+# 1211. Queries Quality and Percentage
+
+select query_name,
+round(avg(rating*1.0/position),2) as quality,
+round(
+    sum(case when rating < 3 then 1 else 0 end)*100.00/count(rating)
+    ,2) as poor_query_percentage 
+from queries
+where query_name is not null
+group by query_name
+
+# 1193. Monthly Transactions I
+
+SELECT 
+    TO_CHAR(trans_date, 'YYYY-MM') AS month,
+    country, 
+    COUNT(id) AS trans_count,
+    SUM(case when state = 'approved' then 1 else 0 end) as approved_count,
+    SUM(amount) AS trans_total_amount,
+    SUM(case when state = 'approved' then amount else 0 end) AS approved_total_amount
+FROM 
+    Transactions
+GROUP BY 
+    month, country;
+
+# 1174. Immediate Food Delivery II
+
+## Tỷ lệ đơn hàng giao ngay trong ngày:
+
+select 
+round(
+sum(case when 
+order_date = customer_pref_delivery_date 
+then 1 else 0 end
+    )*100.0
+    /count(*) 
+    ,2)as immediate_percentage from Delivery
+
+## Tỷ lệ khách hàng nhận được đơn hàng đầu tiên giao ngay trong ngày
