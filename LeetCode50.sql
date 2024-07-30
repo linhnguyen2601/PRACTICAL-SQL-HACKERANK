@@ -238,3 +238,130 @@ then 1 else 0 end
     ,2)as immediate_percentage from Delivery
 
 ## Tỷ lệ khách hàng nhận được đơn hàng đầu tiên giao ngay trong ngày
+
+select round(sum(immediate)*100.0/count(*),2) as immediate_percentage from 
+  (
+  select 
+    customer_id, 
+    case 
+      when order_date = (min(order_date) over(partition by customer_id)) 
+      then 1 
+      else 0 end as first_order,
+    case 
+      when order_date = customer_pref_delivery_date
+      then 1 
+      else 0 end as immediate
+  from delivery
+  ) as a
+where first_order =1
+
+# 550. Game Play Analysis IV
+
+with cte as 
+    (
+select player_id, event_date, 
+row_number() over (partition by player_id order by event_date) as first_day,
+lead(event_date) over(partition by player_id order by event_date) as next_day 
+from activity
+    ),
+cte2 as
+    (
+select player_id, first_day,
+case when next_day - event_date = 1 then 1 else 0 end as login_next_day
+from cte)
+select 
+round(
+sum
+(case when first_day = 1 and login_next_day =1 then 1 else 0 end)*1.0
+/count(distinct(player_id))
+,2) as fraction from cte2
+
+# 2356. Number of Unique Subjects Taught by Each Teacher
+
+select teacher_id, count(Distinct(Subject_id)) as cnt from teacher
+group by teacher_id
+
+# 1141. User Activity for the Past 30 Days I
+
+select activity_date as day, count(distinct(user_id)) as active_users
+from activity
+where activity_date between '2019-06-28' and '2019-07-27'
+group by activity_date
+
+# 1070. Product Sales Analysis III
+
+select product_id, year as first_year, quantity, price from
+(
+select product_id, year,
+rank() over(partition by product_Id order by year) as stt,
+quantity, price from sales) as a
+where stt =1
+
+# 596. Classes More Than 5 Students
+  
+select class from courses 
+group by class
+having count(student) >= 5
+
+# 1729. Find Followers Count
+
+select user_id, count(follower_id) as followers_count from followers
+group by user_id
+order by user_id
+
+# 619. Biggest Single Number
+
+select max(num) as num from (
+select num, count(num) as cnt from mynumbers
+group by num) as a
+where cnt =1 
+
+# 1045. Customers Who Bought All Products
+
+select customer_id from (
+select customer_id, count(distinct(product_key)) as cnt from customer 
+group by customer_id) as a
+where cnt = (select count(distinct(product_key)) from product)
+
+# 1731. The Number of Employees Which Report to Each Employee
+
+with cte as (
+select reports_to as employee_id, count(employee_id) as reports_count, 
+round(avg(age)) as average_age from employees
+group by reports_to 
+having count(employee_id) >= 1)
+select a.employee_id, b.name, reports_count, average_age from cte as a
+join employees as b
+on a.employee_id = b.employee_id
+order by a.employee_id
+
+# 1789. Primary Department for Each Employee
+
+select employee_id, department_id from employee 
+where
+primary_flag = 'Y'
+or employee_id in (
+    select employee_id from employee 
+    group by employee_id
+    having count(department_id) =1
+)
+
+# 610. Triangle Judgement
+
+select *,
+case when
+x + y > z and y+ z > x and x + z > y then 'Yes' else 'No' end as triangle 
+from triangle
+
+# 180. Consecutive Numbers
+
+select distinct(num) as ConsecutiveNums from 
+(
+select id, num, 
+lead(id) over(order by id) next_id, 
+lead(id, 2) over(order by id) as third_id,
+lead(num) over(order by id) as next_num,
+lead(num,2) over(order by id) as third_num
+ from logs) as a
+ where num = next_num and num = third_num and
+ id + 1 = next_id and id + 2 = third_id
