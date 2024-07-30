@@ -77,4 +77,56 @@ group by machine_id
 
 # 577. Employee Bonus
 
+select name, bonus from employee as a
+left join bonus as b
+on a.empID= b.empID
+where bonus < 1000 or bonus is null
+
+# 1280. Students and Examinations  #cross join
+  
+with cte as(
+select a.*, b.*, c.student_id as student_exam from students as a
+cross join subjects as b
+left join examinations as c
+on a.student_id = c.student_id and b.subject_name = c.subject_name
+order by a.student_id, b.subject_name),
+cte2 as(
+select student_id, student_name, subject_name, 
+case when student_exam is null then 0 else 1 end as exam
+from cte)
+select student_id, student_name, subject_name, sum(exam) as attended_exams from cte2
+group by student_id, student_name, subject_name
+
+# 570. Managers with at Least 5 Direct Reports
+
+select name from employee where 
+id in (select managerid from employee
+group by managerid
+having count(*) >= 5) 
+
+# 1934. Confirmation Rate
+
+with cte as (
+select a.user_id, b.action from signups as a
+left join confirmations as b
+on a.user_id = b.user_id )
+
+select user_id, 
+round(sum(case when action = 'confirmed' then 1 else 0 end)*1.0/count(*),2) as confirmation_rate 
+  from cte
+group by user_id
+
+
+
+# 2356. Number of Unique Subjects Taught by Each Teacher
+
+#Pandas:
+
+import pandas as pd
+
+def count_unique_subjects(teacher: pd.DataFrame) -> pd.DataFrame:
+
+#PostgresSQL:
+
+
 
