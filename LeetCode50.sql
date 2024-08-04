@@ -509,3 +509,34 @@ and same_tiv_2015 > 1
 
 # 185. Department Top Three Salaries
 
+with cte as (
+Select b.name as department, a.name as employee, salary,
+dense_rank()  over(partition by b.name order by salary desc) as ranking from employee as a
+join department as b
+on a.departmentId = b.id
+)
+select department, employee, salary from cte
+where ranking <= 3
+
+# 1667. Fix Names in a Table
+
+SELECT user_id, 
+       INITCAP(name) AS name
+FROM users
+ORDER BY user_id
+
+# 1527. Patients With a Condition
+
+select patient_id, patient_name, conditions from patients
+where conditions like 'DIAB1%' or conditions like '% DIAB1%'
+
+# 196. Delete Duplicate Emails
+
+with cte as (
+select id, email, 
+row_number() over(partition by email order by id) as stt from person)
+delete from person
+where id in (select id from cte where stt > 1) 
+
+
+
