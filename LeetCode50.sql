@@ -278,49 +278,60 @@ sum
 
 # 2356. Number of Unique Subjects Taught by Each Teacher
 
-select teacher_id, count(Distinct(Subject_id)) as cnt from teacher
+select teacher_id, count(Distinct(Subject_id)) as cnt 
+from teacher
 group by teacher_id
 
 # 1141. User Activity for the Past 30 Days I
 
-select activity_date as day, count(distinct(user_id)) as active_users
+select activity_date as day, 
+      count(distinct(user_id)) as active_users
 from activity
 where activity_date between '2019-06-28' and '2019-07-27'
 group by activity_date
 
 # 1070. Product Sales Analysis III
 
-select product_id, year as first_year, quantity, price from
-(
-select product_id, year,
-rank() over(partition by product_Id order by year) as stt,
-quantity, price from sales) as a
+select product_id, year as first_year, quantity, price 
+  from
+  (
+    select product_id, year,
+    rank() over(partition by product_Id order by year) as stt,
+    quantity, price 
+    from sales
+  ) as a
 where stt =1
 
 # 596. Classes More Than 5 Students
   
-select class from courses 
+select class 
+from courses 
 group by class
 having count(student) >= 5
 
 # 1729. Find Followers Count
 
-select user_id, count(follower_id) as followers_count from followers
+select user_id, count(follower_id) as followers_count 
+  from followers
 group by user_id
 order by user_id
 
 # 619. Biggest Single Number
 
-select max(num) as num from (
-select num, count(num) as cnt from mynumbers
-group by num) as a
+select max(num) as num 
+from (
+  select num, count(num) as cnt 
+  from mynumbers
+  group by num) as a
 where cnt =1 
 
 # 1045. Customers Who Bought All Products
 
-select customer_id from (
-select customer_id, count(distinct(product_key)) as cnt from customer 
-group by customer_id) as a
+select customer_id 
+from (
+    select customer_id, count(distinct(product_key)) as cnt 
+    from customer 
+    group by customer_id) as a
 where cnt = (select count(distinct(product_key)) from product)
 
 # 1731. The Number of Employees Which Report to Each Employee
@@ -355,13 +366,77 @@ from triangle
 
 # 180. Consecutive Numbers
 
-select distinct(num) as ConsecutiveNums from 
-(
+select distinct(num) as ConsecutiveNums 
+  from 
+  (
 select id, num, 
-lead(id) over(order by id) next_id, 
-lead(id, 2) over(order by id) as third_id,
-lead(num) over(order by id) as next_num,
-lead(num,2) over(order by id) as third_num
- from logs) as a
- where num = next_num and num = third_num and
+  lead(id) over(order by id) next_id, 
+  lead(id, 2) over(order by id) as third_id,
+  lead(num) over(order by id) as next_num,
+  lead(num,2) over(order by id) as third_num
+from logs
+  ) as a
+ where num = next_num and num = third_num 
+  and
  id + 1 = next_id and id + 2 = third_id
+
+# 1164. Product Price at a Given Date
+
+with cte as (
+  
+select Product_id, new_price, change_date, 
+case when change_date <= '2019-08-16' 
+  then
+    row_number() over(partition by product_id order by change_date) 
+  end as change_times,
+min(change_date) over(partition by product_id) as first_change
+from products)
+
+, cte2 as (
+
+select product_id,
+case 
+when 
+  first_change > '2019-08-16' then 10
+when
+  change_date = '2019-08-16' then new_price
+when 
+  change_times = max(change_times) over(partition by product_id) then new_price
+ end as price
+from cte)
+
+select distinct(product_id), price from cte2
+where price is not null
+
+# 1204. Last Person to Fit in the Bus
+
+with cte as
+(
+select person_name,
+sum(weight) over(order by turn) as total_weight from queue
+)
+select person_name from cte
+where total_weight = (select max(total_weight) from cte where total_weight <= 1000)
+
+# 1907. Count Salary Categories
+
+select 'Low Salary' as category, count(*) as accounts_count from accounts
+where income < 20000
+union
+select 'Average Salary' as category, count(*) as accounts_count from accounts
+where income between 20000 and 50000
+union
+select 'High Salary' as category, count(*) as accounts_count from accounts
+where income > 50000
+
+# 1978. Employees Whose Manager Left the Company
+
+select employee_id from employees 
+where salary < 30000 and
+manager_id is not null and manager_id not in 
+(select employee_id from employees) 
+order by employee_id
+
+# 626. Exchange Seats
+
+
