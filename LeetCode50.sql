@@ -538,5 +538,18 @@ row_number() over(partition by email order by id) as stt from person)
 delete from person
 where id in (select id from cte where stt > 1) 
 
+# 176. Second Highest Salary
+WITH cte AS (
+    SELECT id, 
+           salary, 
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS stt 
+    FROM employee
+)
+SELECT 
+    CASE 
+        WHEN MAX(stt) = 1 THEN NULL 
+        ELSE (SELECT salary FROM cte WHERE stt = 2)
+    END AS SecondHighestSalary
+FROM cte;
 
 
