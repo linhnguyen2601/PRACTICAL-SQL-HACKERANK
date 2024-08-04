@@ -439,4 +439,73 @@ order by employee_id
 
 # 626. Exchange Seats
 
+select
+case 
+when id%2 = 1 and id = (Select count(*) from seat) then id 
+when id%2=0 then id - 1
+else id + 1 
+end as id,
+student from seat
+order by id
+
+# 1341. Movie Rating  
+(SELECT name AS results
+FROM users AS a
+JOIN movieRating AS b ON a.user_id = b.user_id
+GROUP BY name
+ORDER BY COUNT(*) DESC, name
+LIMIT 1)
+
+UNION ALL
+
+(SELECT title AS results
+FROM movies AS c
+JOIN movieRating AS d ON c.movie_id = d.movie_id
+WHERE d.created_at BETWEEN '2020-02-01' AND '2020-02-29'
+GROUP BY title
+ORDER BY AVG(d.rating) DESC, title
+
+LIMIT 1);
+
+# 1321. Restaurant Growth
+
+with cte as
+(select visited_on, sum(amount) as amount from customer
+group by visited_on),
+cte2 as (
+select visited_on,
+sum(amount) over(order by visited_on rows between 6 preceding and current row) as amount from cte
+)
+select visited_on, amount, 
+round(amount/7,2) as average_amount
+from cte2 
+offset 6
+
+# 602. Friend Requests II: Who Has the Most Friends
+
+with cte as (
+select requester_id as id, count(requester_id) as num from RequestAccepted
+group by requester_id
+UNION ALL
+select accepter_id as id, count(accepter_id) as num from RequestAccepted
+group by accepter_id
+)
+select id, sum(num) as num
+from cte
+group by id
+order by num desc
+limit 1
+
+# 585. Investments in 2016
+
+with cte as (
+select tiv_2015, tiv_2016, lat, lon, 
+row_number() over(partition by lat, lon) as num,
+count(*) over(partition by tiv_2015) as same_tiv_2015 from insurance)
+
+select round(sum(tiv_2016)::numeric,2) as tiv_2016 from cte
+where (lat, lon) not in (select lat, lon from cte where num = 2)
+and same_tiv_2015 > 1
+
+# 185. Department Top Three Salaries
 
