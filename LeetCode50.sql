@@ -539,17 +539,105 @@ delete from person
 where id in (select id from cte where stt > 1) 
 
 # 176. Second Highest Salary
+  
 WITH cte AS (
     SELECT id, 
            salary, 
-           DENSE_RANK() OVER (ORDER BY salary DESC) AS stt 
+            DENSE_RANK() OVER (ORDER BY salary DESC) AS stt 
     FROM employee
 )
 SELECT 
     CASE 
         WHEN MAX(stt) = 1 THEN NULL 
-        ELSE (SELECT salary FROM cte WHERE stt = 2)
+        ELSE (SELECT salary FROM cte WHERE stt = 2 limit 1)
     END AS SecondHighestSalary
 FROM cte;
 
+# 570. Managers with at Least 5 Direct Reports
+  
+select name from employee where id in (
+            select managerId from employee 
+            group by managerID
+            having count(managerId) >=5)
 
+# 1934. Confirmation Rate
+
+with cte as(    
+select a.user_id, 
+count(*) as total_cnt,
+sum(case when action = 'confirmed' then 1 else 0 end) as confirmed_cnt
+from signups as a
+left join confirmations as b
+on a.user_id =  b.user_id
+group by user_id
+)
+select user_id, 
+case when confirmed_cnt is null then 0
+else
+round(confirmed_cnt/(total_cnt),2) end as confirmation_rate 
+from cte
+
+# 620. Not Boring Movies
+
+select * from cinema 
+where id%2=1 and description not like '%boring%'
+order by rating desc
+
+# 1251. Average Selling Price
+  
+with cte as(
+select a.product_id, a.price, b.units from prices as a
+left join unitssold as b
+on a.product_id = b.product_id
+where b.purchase_date is null or b.purchase_date between a.start_date and a.end_date)
+select product_id, 
+case 
+when sum(units) is not null 
+then (round(sum(price*units)/sum(units) :: numeric, 2)) 
+else 0 end as average_price from cte
+group by product_id
+
+# 1075. Project Employees I
+
+select project_id, 
+round(avg(experience_years),2) as average_years  from project as a
+join employee as b
+on a.employee_id = b.employee_id
+group by project_id
+
+# 1667. Fix Names in a Table
+  
+SELECT user_id, 
+concat(upper(left(name, 1)), lower(substring(name, 2))) as name
+FROM users
+ORDER BY user_id;
+
+# 1484. Group Sold Products By The Date
+
+select sell_date, count(distinct(product)) as num_sold, 
+string_agg(distinct(product),',' order by product)  as products
+from activities
+group by sell_date
+order by sell_date 
+
+# 1484. Group Sold Products By The Date
+  
+select product_name, sum(unit) as unit from products as a 
+join orders as b
+on a.product_id = b.product_id
+where order_date between '2020-02-01' and '2020-02-29'
+group by product_name
+having sum(unit) >= 100
+
+# 1517. Find Users With Valid E-Mails
+
+SELECT *
+FROM Users
+WHERE mail ~ '^[a-zA-Z]+[a-zA-Z0-9_.-]*@leetcode\.com$'
+
+Explanation of the Regular Expression
+^: Asserts the position at the start of the string.
+[a-zA-Z]+: Matches one or more alphabetic characters (both lowercase a-z and uppercase A-Z).
+[a-zA-Z0-9_.-]*: Matches zero or more characters that can be alphabetic (a-zA-Z), digits (0-9), underscores (_), dots (.), or hyphens (-).
+@leetcode\.com: Matches the literal string @leetcode.com. The backslash (\) is used to escape the dot (.), making it a literal dot rather than the regex metacharacter for any character.
+$: Asserts the position at the end of the string.
